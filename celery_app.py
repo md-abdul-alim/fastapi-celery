@@ -1,14 +1,13 @@
 from celery import Celery
-from celery.schedules import crontab
-import os
+from app.tasks import run_process
 
 # Create Celery application
 celery_app = Celery(
-    'tasks',
+    'celery_app',
     broker='redis://localhost:6379/10',   # Redis as the broker
     backend='db+postgresql://postgres:1234@localhost/ct',  # PostgreSQL for task results
 )
-print('----1-----')
+
 # Celery configuration
 celery_app.conf.update(
     task_serializer='json',
@@ -22,22 +21,15 @@ celery_app.conf.update(
     task_acks_late=True,  # Only acknowledge tasks after completion
     result_expires=3600  # Results expire after 1 hour
 )
-print('----2----')
+
 # Celery Beat: Periodic task schedule
-# celery_app.conf.beat_schedule = {
-#     'say-hello-every-10-seconds': {
-#         'task': run_process,
-#         'schedule': 10.0,  # Run every 10 seconds
-#     },
-# }
 
 celery_app.conf.beat_schedule = {
     'check-chat-everyday-15-minutes': {
-        'task': 'app.tasks.run_process',
+        'task': run_process,
         'schedule': 10.0,  # Run every 10 seconds
     },
 }
-print('----3----')
 
 # celery_app.conf.task_routes = {run_process: {'queue': 'default'}}
 # print('----4----')

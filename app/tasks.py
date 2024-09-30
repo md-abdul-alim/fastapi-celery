@@ -1,7 +1,6 @@
-from celery_app import celery_app
-import time
+from celery import shared_task
 
-from main import CeleryTask, get_db
+from .main import CeleryTask, get_db
 from celery import Task
 from sqlalchemy.orm import Session
 
@@ -18,14 +17,7 @@ def save_task_to_db(task: Task, status: str, result: str, db: Session):
     return db_task
 
 
-@celery_app.task(bind=True)
-def run_process(self, a: int, b: int):
-    result = a + b
-    
-    # Get a database session
-    db = next(get_db())
-    
-    # Save the task result in the database
-    save_task_to_db(self, 'SUCCESS', str(result), db)
-    
-    return result
+@shared_task
+def run_process():
+    # Task logic here
+    return "Task completed"
