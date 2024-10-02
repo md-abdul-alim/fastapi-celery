@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 # Define the CeleryTask model inside `main.py` or import it from another file
-from sqlalchemy import Column, Integer, String, DateTime, JSON
+from sqlalchemy import Column, Integer, String, DateTime, JSON, Boolean
 from datetime import datetime
 
 # Database configuration
@@ -31,10 +31,8 @@ class CeleryTask(Base):
     __tablename__ = 'celery_tasks'
 
     id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(String, unique=True, index=True, nullable=True)
     task = Column(JSON, nullable=False)
-    status = Column(String, nullable=True)
-    result = Column(String, nullable=True)
+    status = Column(Boolean, default=False)
     timestamp = Column(DateTime, default=datetime.now)
 
 # Create the tables in the PostgreSQL database
@@ -53,7 +51,7 @@ class CeleryTaskCreate(BaseModel):
 
 
 # POST API to create a new CeleryTask
-@app.post("/tasks/create", response_model=CeleryTaskCreate)
+@app.post("/api/celery/tasks/create", response_model=CeleryTaskCreate)
 def create_celery_task(task_data: CeleryTaskCreate, db: Session = Depends(get_db)):
     """
     API endpoint: 127.0.0.1:8000/tasks/create
