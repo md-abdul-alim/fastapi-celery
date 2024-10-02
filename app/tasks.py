@@ -19,5 +19,6 @@ def save_task_to_db(task: Task, status: str, result: str, db: Session):
 
 @shared_task
 def run_process():
+    save_task_to_db()
     # Task logic here
     return "Task completed"

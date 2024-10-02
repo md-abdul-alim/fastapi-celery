@@ -26,7 +26,7 @@ celery_app.conf.update(
 
 celery_app.conf.beat_schedule = {
     'check-chat-everyday-15-minutes': {
-        'task': run_process,
+        'task': 'app.tasks.run_process',
         'schedule': 10.0,  # Run every 10 seconds
     },
 }
